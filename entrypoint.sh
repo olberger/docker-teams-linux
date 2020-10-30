@@ -1,38 +1,40 @@
 #!/bin/bash
 set -e
 
+#set -x
+
 USER_UID=${USER_UID:-1000}
 USER_GID=${USER_GID:-1000}
 
-ZOOM_US_USER=zoom
+TEAMS_USER=teams
 
-install_zoom_us() {
-  echo "Installing zoom-us-wrapper..."
-  install -m 0755 /var/cache/zoom-us/zoom-us-wrapper /target/
-  echo "Installing zoom-us..."
-  ln -sf zoom-us-wrapper /target/zoom
+install_teams() {
+  echo "Installing teams-wrapper..."
+  install -m 0755 /var/cache/teams/teams-wrapper /target/
+  echo "Installing teams..."
+  ln -sf teams-wrapper /target/teams
 }
 
-uninstall_zoom_us() {
-  echo "Uninstalling zoom-us-wrapper..."
-  rm -rf /target/zoom-us-wrapper
-  echo "Uninstalling zoom-us..."
-  rm -rf /target/zoom
+uninstall_teams() {
+  echo "Uninstalling teams-wrapper..."
+  rm -rf /target/teams-wrapper
+  echo "Uninstalling teams..."
+  rm -rf /target/teams
 }
 
 create_user() {
   # create group with USER_GID
-  if ! getent group ${ZOOM_US_USER} >/dev/null; then
-    groupadd -f -g ${USER_GID} ${ZOOM_US_USER} >/dev/null 2>&1
+  if ! getent group ${TEAMS_USER} >/dev/null; then
+    groupadd -f -g ${USER_GID} ${TEAMS_USER} >/dev/null 2>&1
   fi
 
   # create user with USER_UID
-  if ! getent passwd ${ZOOM_US_USER} >/dev/null; then
+  if ! getent passwd ${TEAMS_USER} >/dev/null; then
     adduser --disabled-login --uid ${USER_UID} --gid ${USER_GID} \
-      --gecos 'ZoomUs' ${ZOOM_US_USER} >/dev/null 2>&1
+      --gecos 'Teams' ${TEAMS_USER} >/dev/null 2>&1
   fi
-  chown ${ZOOM_US_USER}:${ZOOM_US_USER} -R /home/${ZOOM_US_USER}
-  adduser ${ZOOM_US_USER} sudo
+  chown ${TEAMS_USER}:${TEAMS_USER} -R /home/${TEAMS_USER}
+  adduser ${TEAMS_USER} sudo
 }
 
 grant_access_to_video_devices() {
@@ -42,33 +44,34 @@ grant_access_to_video_devices() {
       VIDEO_GID=$(stat -c %g $device)
       VIDEO_GROUP=$(stat -c %G $device)
       if [[ ${VIDEO_GROUP} == "UNKNOWN" ]]; then
-        VIDEO_GROUP=zoomusvideo
+        VIDEO_GROUP=teamsvideo
         groupadd -g ${VIDEO_GID} ${VIDEO_GROUP}
       fi
-      usermod -a -G ${VIDEO_GROUP} ${ZOOM_US_USER}
+      usermod -a -G ${VIDEO_GROUP} ${TEAMS_USER}
       break
     fi
   done
 }
 
-launch_zoom_us() {
-  cd /home/${ZOOM_US_USER}
-  exec sudo -HEu ${ZOOM_US_USER} PULSE_SERVER=/run/pulse/native QT_GRAPHICSSYSTEM="native" xcompmgr -c -l0 -t0 -r0 -o.00 &
-  exec sudo -HEu ${ZOOM_US_USER} PULSE_SERVER=/run/pulse/native QT_GRAPHICSSYSTEM="native" $@
+launch_bash() {
+  cd /home/${TEAMS_USER}
+#  exec sudo -HEu ${TEAMS_USER} PULSE_SERVER=/run/pulse/native QT_GRAPHICSSYSTEM="native" xcompmgr -c -l0 -t0 -r0 -o.00 &
+#  exec sudo -HEu ${TEAMS_USER} PULSE_SERVER=/run/pulse/native QT_GRAPHICSSYSTEM="native" $@
+  exec sudo -HEu ${TEAMS_USER} PULSE_SERVER=/run/pulse/native QT_GRAPHICSSYSTEM="native" /bin/bash
 }
 
 case "$1" in
   install)
-    install_zoom_us
+    install_teams
     ;;
   uninstall)
-    uninstall_zoom_us
+    uninstall_teams
     ;;
-  zoom)
+  bash)
     create_user
     grant_access_to_video_devices
     echo "$1"
-    launch_zoom_us $@
+    launch_bash $@
     ;;
   *)
     exec $@

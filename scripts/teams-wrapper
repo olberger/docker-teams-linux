@@ -1,7 +1,9 @@
 #!/bin/bash
 
+#set -x
+
 PATH=/usr/sbin:/usr/bin:/sbin:/bin
-ZOOM_US_USER=zoom
+TEAMS_USER=teams
 
 # do we need to use sudo to start docker containers?
 ( id -Gn | grep -q docker ) || SUDO=sudo
@@ -23,19 +25,19 @@ fi;
 
 list_commands() {
   echo ""
-  echo "Launch zoom-us using:"
-  echo "  zoom                        OR "
-  echo "  zoom-us-wrapper zoom"
+  echo "Launch teams using:"
+  echo "  teams                        OR "
+  echo "  teams-wrapper bash"
   echo ""
   exit 1
 }
 
-cleanup_stopped_zoom_us_instances(){
-  echo "Cleaning up stopped zoom-us instances..."
+cleanup_stopped_teams_instances(){
+  echo "Cleaning up stopped teams instances..."
   for c in $(${SUDO} docker ps -a -q)
   do
     image="$(${SUDO} docker inspect -f {{.Config.Image}} ${c})"
-    if [ "${image}" == "mdouchement/zoom-us:latest" ]; then
+    if [ "${image}" == "olberger/teams:latest" ]; then
       running=$(${SUDO} docker inspect -f {{.State.Running}} ${c})
       if [ "${running}" != "true" ]; then
         ${SUDO} docker rm "${c}" >/dev/null
@@ -56,25 +58,28 @@ prepare_docker_volume_parameters() {
   touch ${XAUTH}
   xauth nlist :0 | sed -e 's/^..../ffff/' | xauth -f ${XAUTH} nmerge -
 
-  if [[ -z "${ZOOM_HOME}" ]]; then
-    ZOOM_HOME=${HOME} # Default directory
+  if [[ -z "${TEAMS_HOME}" ]]; then
+    TEAMS_HOME=${HOME} # Default directory
   else
-    DOWNLOAD_DIR=${DOWNLOAD_DIR/$HOME/$ZOOM_HOME}
-    DOCUMENTS_DIR=${DOCUMENTS_DIR/$HOME/$ZOOM_HOME}
+    DOWNLOAD_DIR=${DOWNLOAD_DIR/$HOME/$TEAMS_HOME}
+    DOCUMENTS_DIR=${DOCUMENTS_DIR/$HOME/$TEAMS_HOME}
     mkdir -p {$DOWNLOAD_DIR,$DOCUMENTS_DIR}
 
-    mkdir -p ${ZOOM_HOME}/{.config,.cache,.zoom}
+#    mkdir -p ${TEAMS_HOME}/{.config,.cache}
+    mkdir -p ${TEAMS_HOME}/.config
   fi
 
-  echo "Using ZOOM_HOME: ${ZOOM_HOME}"
+  echo "Using TEAMS_HOME: ${TEAMS_HOME}"
 
-  touch ${ZOOM_HOME}/.config/zoomus.conf # create if not exists
+#  touch ${TEAMS_HOME}/.config/zoomus.conf # create if not exists
 
-  VOLUMES+=" --volume=${ZOOM_HOME}/.config/zoomus.conf:/home/${ZOOM_US_USER}/.config/zoomus.conf"
-  VOLUMES+=" --volume=${ZOOM_HOME}/.cache/zoom:/home/${ZOOM_US_USER}/.cache/zoom"
-  VOLUMES+=" --volume=${ZOOM_HOME}/.zoom:/home/${ZOOM_US_USER}/.zoom"
-  VOLUMES+=" --volume=${DOWNLOAD_DIR}:/home/${ZOOM_US_USER}/Downloads"
-  VOLUMES+=" --volume=${DOCUMENTS_DIR}:/home/${ZOOM_US_USER}/Documents"
+#  VOLUMES+=" --volume=${TEAMS_HOME}/.config/zoomus.conf:/home/${TEAMS_USER}/.config/zoomus.conf"
+  VOLUMES+=" --volume=${TEAMS_HOME}/.config/teams:/home/${TEAMS_USER}/.config/teams"
+  VOLUMES+=" --volume=${TEAMS_HOME}/.config/Microsoft:/home/${TEAMS_USER}/.config/Microsoft"
+  # VOLUMES+=" --volume=${TEAMS_HOME}/.cache/zoom:/home/${TEAMS_USER}/.cache/zoom"
+  # VOLUMES+=" --volume=${TEAMS_HOME}/.zoom:/home/${TEAMS_USER}/.zoom"
+  # VOLUMES+=" --volume=${DOWNLOAD_DIR}:/home/${TEAMS_USER}/Downloads"
+  # VOLUMES+=" --volume=${DOCUMENTS_DIR}:/home/${TEAMS_USER}/Documents"
   VOLUMES+=" --volume=${XSOCK}:${XSOCK}"
   VOLUMES+=" --volume=${XAUTH}:${XAUTH}"
   VOLUMES+=" --volume=/run/user/${USER_UID}/pulse:/run/pulse"
@@ -94,9 +99,13 @@ prepare_docker_device_parameters() {
 prog=$(basename $0)
 exec=$(which $prog)
 
-if [[ ${prog} == "zoom-us-wrapper" ]]; then
+if [[ ${prog} == "teams-wrapper" ]]; then
   case ${1} in
-    zoom)
+    # teams)
+    #   prog=${1}
+    #   shift
+    #   ;;
+    bash)
       prog=${1}
       shift
       ;;
@@ -106,21 +115,24 @@ if [[ ${prog} == "zoom-us-wrapper" ]]; then
       ;;
   esac
 elif [[ -n ${exec} ]]; then
-  # launch host binary if it exists
-  exec ${exec} $@
+    # launch host binary if it exists
+    exec ${exec} $@
 fi
 
-cleanup_stopped_zoom_us_instances
+cleanup_stopped_teams_instances
 prepare_docker_env_parameters
 prepare_docker_volume_parameters
 prepare_docker_device_parameters
 
 echo "Starting ${prog}..."
-${SUDO} docker run -d \
+#${SUDO} docker run -d \
+${SUDO} docker run -it \
   ${ENV_VARS} \
   ${VIDEO_DEVICES} \
   --device /dev/dri \
   ${VOLUMES} \
-  ${ZOOM_EXTRA_DOCKER_ARGUMENTS} \
-  --name zoomus \
-  mdouchement/zoom-us:latest ${prog} $@ >/dev/null
+  ${TEAMS_EXTRA_DOCKER_ARGUMENTS} \
+  --name teams \
+  olberger/teams:latest ${prog} $@
+
+#>/dev/null

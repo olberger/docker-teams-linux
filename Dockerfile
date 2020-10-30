@@ -1,8 +1,10 @@
 # References:
+#   https://gist.github.com/demaniak/c56531c8d673a6f58ee54b5621796548
+#   https://github.com/mdouchement/docker-zoom-us
 #   https://hub.docker.com/r/solarce/zoom-us
 #   https://github.com/sameersbn/docker-skype
 FROM debian:buster
-MAINTAINER mdouchement
+MAINTAINER olberger
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -20,16 +22,22 @@ RUN apt-get install -qy curl iceweasel sudo desktop-file-utils lib32z1 \
   libxcb-keysyms1 libxcb-xtest0 ibus ibus-gtk \
   libnss3 libxss1 xcompmgr pulseaudio
 
-ARG ZOOM_URL=https://zoom.us/client/latest/zoom_amd64.deb
+RUN apt-get install -qy apt-utils \
+     libasound2 libatk-bridge2.0-0 libcairo2 libcups2 libgdk-pixbuf2.0-0 \
+    libgtk-3-0 libnspr4 libnss3 libpango-1.0-0 libpangocairo-1.0-0 \
+    libsecret-1-0 libx11-xcb1 libxcomposite1 libxcomposite1 \
+    libxss1 apt-transport-https libxkbfile1
+
+ARG TEAMS_URL="https://go.microsoft.com/fwlink/p/?LinkID=2112886&clcid=0x40c&culture=fr-fr&country=FR"
 
 # Grab the client .deb
 # Install the client .deb
 # Cleanup
-RUN curl -sSL $ZOOM_URL -o /tmp/zoom_setup.deb
-RUN dpkg -i /tmp/zoom_setup.deb
+RUN curl -sSL $TEAMS_URL -o /tmp/teams.deb
+RUN dpkg -i /tmp/teams.deb
 RUN apt-get -f install
 
-COPY scripts/ /var/cache/zoom-us/
+COPY scripts/ /var/cache/teams/
 COPY entrypoint.sh /sbin/entrypoint.sh
 RUN chmod 755 /sbin/entrypoint.sh
 
