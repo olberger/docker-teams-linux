@@ -1,6 +1,6 @@
 This project is fully inspired of Marc Douchement's [docker-zoom-us](https://github.com/mdouchement/docker-zoom-us), which in turn was inspired by [sameersbn](https://github.com/sameersbn) [Skype](https://github.com/sameersbn/docker-skype)'s containerization.
 
-# olberger/teams
+# olberger/docker-teams-linux
 
 # Introduction
 
@@ -13,7 +13,7 @@ The image uses [X11](http://www.x.org) and [Pulseaudio](http://www.freedesktop.o
 If you find this image useful here's how you can help:
 
 - Send a pull request with your awesome features and bug fixes
-- Help users resolve their [issues](https://github.com/olberger/docker-teams/issues?q=is%3Aopen+is%3Aissue).
+- Help users resolve their [issues](https://github.com/olberger/docker-teams-linux/issues?q=is%3Aopen+is%3Aissue).
 
 # Getting started
 
