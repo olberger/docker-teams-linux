@@ -72,9 +72,11 @@ The wrapper scripts volume mount the X11 and pulseaudio sockets in the launcher 
 
 When the image is launched the following directories are mounted as volumes
 
-- `${HOME}/.config`
-- `XDG_DOWNLOAD_DIR` or if it is missing `${HOME}/Downloads`
-- `XDG_DOCUMENTS_DIR` or if it is missing `${HOME}/Documents`
+- `${HOME}/.config/teams`
+- `${HOME}/.config/Microsoft`
+
+<!-- - `XDG_DOWNLOAD_DIR` or if it is missing `${HOME}/Downloads` -->
+<!-- - `XDG_DOCUMENTS_DIR` or if it is missing `${HOME}/Documents` -->
 
 This makes sure that your profile details are stored on the host and files received via Teams are available on your host in the appropriate download directory.
 
