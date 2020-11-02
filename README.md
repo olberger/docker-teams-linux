@@ -19,16 +19,16 @@ If you find this image useful here's how you can help:
 
 ## Installation
 
-Automated builds of the image are available on [Dockerhub](https://hub.docker.com/r/olberger/teams) and is the recommended method of installation.
+Automated builds of the image are available on [Dockerhub](https://hub.docker.com/r/olberger/docker-teams-linux) and is the recommended method of installation.
 
 ```bash
-docker pull olberger/teams:latest
+docker pull olberger/docker-teams-linux:latest
 ```
 
 Alternatively you can build the image yourself.
 
 ```bash
-docker build -t olberger/teams github.com/olberger/docker-teams
+docker build -t olberger/docker-teams-linux github.com/olberger/docker-teams-linux
 ```
 
 With the image locally available, install the wrapper scripts by running the following as root:
@@ -36,7 +36,7 @@ With the image locally available, install the wrapper scripts by running the fol
 ```bash
 docker run -it --rm \
   --volume /usr/local/bin:/target \
-  olberger/teams:latest install
+  olberger/docker-teams-linux:latest install
 ```
 
 This will install a wrapper script to launch `teams`.
@@ -96,7 +96,7 @@ To upgrade to newer releases:
   1. Download the updated Docker image:
 
   ```bash
-  docker pull olberger/teams:latest
+  docker pull olberger/docker-teams-linux:latest
   ```
 
   2. Run `install` to make sure the host scripts are updated.
@@ -104,7 +104,7 @@ To upgrade to newer releases:
   ```bash
   docker run -it --rm \
     --volume /usr/local/bin:/target \
-    olberger/teams:latest install
+    olberger/docker-teams-linux:latest install
   ```
 
 ## Uninstallation
@@ -112,6 +112,6 @@ To upgrade to newer releases:
 ```bash
 docker run -it --rm \
   --volume /usr/local/bin:/target \
-  olberger/teams:latest uninstall
+  olberger/docker-teams-linux:latest uninstall
 ```
 

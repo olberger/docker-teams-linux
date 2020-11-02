@@ -37,7 +37,7 @@ cleanup_stopped_teams_instances(){
   for c in $(${SUDO} docker ps -a -q)
   do
     image="$(${SUDO} docker inspect -f {{.Config.Image}} ${c})"
-    if [ "${image}" == "olberger/teams:latest" ]; then
+    if [ "${image}" == "olberger/docker-teams-linux:latest" ]; then
       running=$(${SUDO} docker inspect -f {{.State.Running}} ${c})
       if [ "${running}" != "true" ]; then
         ${SUDO} docker rm "${c}" >/dev/null
@@ -133,6 +133,6 @@ ${SUDO} docker run -it \
   ${VOLUMES} \
   ${TEAMS_EXTRA_DOCKER_ARGUMENTS} \
   --name teams \
-  olberger/teams:latest ${prog} $@
+  olberger/docker-teams-linux:latest ${prog} $@
 
 #>/dev/null
