@@ -96,7 +96,8 @@ prepare_docker_device_parameters() {
   done
 }
 
-prog=$(basename $0)
+#prog=$(basename $0)
+prog=$(basename bash)
 exec=$(which $prog)
 
 if [[ ${prog} == "teams-wrapper" ]]; then
@@ -126,7 +127,7 @@ prepare_docker_device_parameters
 
 echo "Starting ${prog}..."
 #${SUDO} docker run -d \
-${SUDO} docker run -it \
+yes 'teams; while true; printf "\033c"; do sleep 10; done' | ${SUDO} docker run -it \
   ${ENV_VARS} \
   ${VIDEO_DEVICES} \
   --device /dev/dri \
