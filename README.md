@@ -46,7 +46,7 @@ This will install a wrapper script to launch `teams`.
 Launch the teams-wrapper script to enter a shell inside the Docker container
 
 ```bash
-teams-wrapper bash
+teams-wrapper
 ```
 
 Then the prompt should be displayed like:
@@ -55,11 +55,9 @@ Adding user `teams' to group `sudo' ...
 Adding user teams to group sudo
 Done.
 bash
-teams@0b2fefbf45d2:~$
 ```
 
-then type `teams`.
-
+And Microsoft Teams should be open and ready to go.
 
 > **Note**
 >
