@@ -127,7 +127,7 @@ prepare_docker_device_parameters
 
 echo "Starting ${prog}..."
 #${SUDO} docker run -d \
-yes 'teams; while true; printf "\033c"; do sleep 10; done' | ${SUDO} docker run -it \
+yes 'teams; while true; printf "\033c"; do sleep 10; done' | ${SUDO} docker run -i \
   ${ENV_VARS} \
   ${VIDEO_DEVICES} \
   --device /dev/dri \
