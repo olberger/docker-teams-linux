@@ -117,3 +117,11 @@ docker run -it --rm \
   olberger/docker-teams-linux:latest uninstall
 ```
 
+## Updating the image rebuild locally
+
+This should ensure to download again the client (and update any other
+bits in the image
+```bash
+docker build --no-cache -t olberger/docker-teams-linux github.com/olberger/docker-teams-linux
+```
+
